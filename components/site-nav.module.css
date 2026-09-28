@@ -1,0 +1,221 @@
+/* This header lives inside the Hero (rendered by glass-hero.tsx) and is
+   positioned absolute relative to it — it scrolls away naturally with the
+   rest of the Hero rather than staying pinned across the whole page. */
+.header {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.nav {
+  position: absolute;
+  top: max(2rem, env(safe-area-inset-top));
+  left: max(5.6vw, 2rem);
+  right: max(5.6vw, 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  animation: fadeInOnly 0.8s var(--ease-signature) 0.15s both;
+}
+
+.nav > * {
+  pointer-events: auto;
+}
+
+/* Brand + links are grouped and kept to the left edge, deliberately clear
+   of the portrait (which sits right-of-centre in the frame) — only the
+   single CTA pill sits on the right. */
+.navGroup {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+  min-width: 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--ink);
+  text-decoration: none;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+.brandName {
+  font-family: var(--font-fragment-mono), monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Layout wrapper for the nav links. It carries no surface of its own:
+   liquid glass appears only on the individual link being hovered or
+   focused (see .navLinks a::before below), never permanently. */
+.linksGlass {
+  border-radius: 999px;
+  padding: 0.4rem 0.5rem;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.85rem, 1.6vw, 1.5rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLinks a {
+  position: relative;
+  isolation: isolate;
+  font-family: var(--font-fragment-mono), monospace;
+  font-size: 0.76rem;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.55rem 0.6rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Hover-only liquid glass: a frosted capsule behind the single link under
+   the cursor/focus. Invisible at rest (opacity 0), so the nav reads as
+   plain type until interacted with. */
+.navLinks a::before {
+  content: "";
+  position: absolute;
+  inset: 0.35rem 0;
+  z-index: -1;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.78) 0%,
+    rgba(255, 255, 255, 0.42) 100%
+  );
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  backdrop-filter: blur(12px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 20px -8px rgba(21, 40, 74, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(21, 40, 74, 0.05);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.35s var(--ease-signature),
+    transform 0.45s var(--ease-signature);
+  pointer-events: none;
+}
+
+.navLinks a:hover::before,
+.navLinks a:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.navLinks a::after {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.5rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-signature),
+    opacity 0.35s var(--ease-signature);
+  opacity: 0.85;
+}
+
+/* The glass capsule is the hover cue now, so the underline is reserved
+   for the active section only. */
+
+.navLinks a[data-active="true"]::after {
+  transform: scaleX(1);
+  opacity: 0.4;
+}
+
+@media (max-width: 1023px) {
+  .linksGlass {
+    display: none;
+  }
+}
+
+.pill {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  flex-shrink: 0;
+  font-family: var(--font-fragment-mono), monospace;
+  font-size: 0.78rem;
+  color: var(--ink);
+  border: 1px solid rgba(10, 13, 18, 0.32);
+  border-radius: 999px;
+  padding: 0.84rem 1.4rem;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: color 0.4s var(--ease-signature),
+    border-color 0.4s var(--ease-signature);
+}
+
+.pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s var(--ease-signature);
+}
+
+.pill:hover,
+.pill:focus-visible {
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.pill:hover::before,
+.pill:focus-visible::before {
+  transform: scaleX(1);
+}
+
+.pillArrow {
+  display: inline-block;
+  transition: transform 0.35s var(--ease-signature);
+}
+
+.pill:hover .pillArrow,
+.pill:focus-visible .pillArrow {
+  transform: translate(2px, -2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill::before,
+  .navLinks a::before {
+    transition: none;
+  }
+}
+
+.brand:focus-visible,
+.navLinks a:focus-visible,
+.pill:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@keyframes fadeInOnly {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
